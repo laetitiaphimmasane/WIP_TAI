@@ -5,20 +5,27 @@ from minio.error import S3Error
 
 def main():
     # Initialiser le client MinIO
-    minioClient = Minio('localhost:9000',
-                    access_key='minio',
-                    secret_key='minio123',
-                    secure=False)
+    minioClient = Minio('minio:9000',
+                        access_key='minio',
+                        secret_key='minio123',
+                        secure=False)
 
-    # Vérifier si le seau existe, sinon le créer
-    if not minioClient.bucket_exists("mybucket"):
-        minioClient.make_bucket("mybucket")
+    # Vérifier si la bucket existe, sinon le créer
+    found = minioClient.bucket_exists("donnes-capteurs")
+    if not found:
+        minioClient.make_bucket("donnes-capteurs")
+    else:
+        print("Bucket 'donnes-capteurs' existe déjà")
 
     # Initialiser le consommateur Kafka
-    consumer = KafkaConsumer('capteur',
-                            bootstrap_servers=['127.0.0.1:9092'],
-                            value_deserializer=lambda m: json.loads(m.decode('utf-8')))
 
+    #consumer = KafkaConsumer('my-topic',bootstrap_servers=['127.0.0.1:9092'])
+    consumer = KafkaConsumer('my-topic',
+                             bootstrap_servers=['127.0.0.1:9092'],
+                             value_deserializer=lambda m: json.loads(m.decode('utf-8')))
+
+    print(consumer.config)
+    print(consumer.bootstrap_connected())
     # Boucle infinie pour lire les données Kafka
     for message in consumer:
         data = message.value
@@ -44,4 +51,4 @@ def main():
         print("Error:", e)
 
 if __name__ == "__main__":
-  main()
+    main()
