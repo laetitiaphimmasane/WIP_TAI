@@ -80,13 +80,13 @@ def sending_df_to_minio(df):
         secret_key="minio123"
     )
 
-    found = client.bucket_exists("donnes-capteurs")
+    found = client.bucket_exists("clean-donnes-capteurs")
     if not found:
-        client.make_bucket("donnes-capteurs")
+        client.make_bucket("clean-donnes-capteurs")
 
     timestamp = datetime.datetime.now().strftime('%d-%m-%y')
     df.to_csv("clean_donnes_capteurs_" + str(timestamp) + ".csv", encoding='utf-8', index=False)
-    client.fput_object("donnes-capteurs", "clean_donnes_capteurs_" + str(timestamp) + ".csv",  "clean_donnes_capteurs_" + str(timestamp) + ".csv")
+    client.fput_object("clean-donnes-capteurs", "clean_donnes_capteurs_" + str(timestamp) + ".csv",  "clean_donnes_capteurs_" + str(timestamp) + ".csv")
 
 
 if __name__ == "__main__":
